@@ -1,55 +1,47 @@
-import { useEffect, useState } from 'react'
-import type { Session } from '@supabase/supabase-js'
-import { supabase } from './lib/supabase'
+import { useState } from 'react'
+import { AuthProvider, useAuth } from './context/AuthContext'
 import LoginForm from './components/LoginForm'
+import Layout, { type Tab } from './components/Layout'
+import JobsPage from './pages/JobsPage'
 
-function App() {
-  const [session, setSession] = useState<Session | null>(null)
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    async function getSession() {
-      const { data } = await supabase.auth.getSession()
-
-      setSession(data.session)
-      setLoading(false)
-    }
-
-    getSession()
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session)
-    })
-
-    return () => {
-      subscription.unsubscribe()
-    }
-  }, [])
-
-  async function handleLogout() {
-    await supabase.auth.signOut()
-  }
+function AuthedApp() {
+  const { session, profile, loading } = useAuth()
+  const [activeTab, setActiveTab] = useState<Tab>('jobs')
+  const [activeOrgId, setActiveOrgId] = useState<string | null>(null)
 
   if (loading) {
-    return <p>Loading...</p>
+    return <p className="p-8 text-sm text-slate-500">Loading...</p>
   }
 
   if (!session) {
     return <LoginForm />
   }
 
+  if (!profile) {
+    return <p className="p-8 text-sm text-slate-500">Setting up your account...</p>
+  }
+
+  const organizationId = profile.role === 'admin' ? activeOrgId : profile.organization_id
+
   return (
-    <main>
-      <h1>Mini ATS</h1>
+    <Layout
+      activeTab={activeTab}
+      onTabChange={setActiveTab}
+      activeOrgId={activeOrgId}
+      onOrgChange={setActiveOrgId}
+    >
+      {activeTab === 'jobs' && <JobsPage organizationId={organizationId} />}
+      {activeTab === 'candidates' && <p className="text-sm text-slate-500">Candidates page coming next.</p>}
+      {activeTab === 'accounts' && <p className="text-sm text-slate-500">Accounts page coming next.</p>}
+    </Layout>
+  )
+}
 
-      <p>Logged in as {session.user.email}</p>
-
-      <button onClick={handleLogout}>
-        Log out
-      </button>
-    </main>
+function App() {
+  return (
+    <AuthProvider>
+      <AuthedApp />
+    </AuthProvider>
   )
 }
 
