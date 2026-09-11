@@ -3,6 +3,8 @@ import { AuthProvider, useAuth } from './context/AuthContext'
 import LoginForm from './components/LoginForm'
 import Layout, { type Tab } from './components/Layout'
 import JobsPage from './pages/JobsPage'
+import CandidatesPage from './pages/CandidatesPage'
+import AdminAccountsPage from './pages/AdminAccountsPage'
 
 function AuthedApp() {
   const { session, profile, loading } = useAuth()
@@ -22,17 +24,18 @@ function AuthedApp() {
   }
 
   const organizationId = profile.role === 'admin' ? activeOrgId : profile.organization_id
+  const tab = activeTab === 'accounts' && profile.role !== 'admin' ? 'jobs' : activeTab
 
   return (
     <Layout
-      activeTab={activeTab}
+      activeTab={tab}
       onTabChange={setActiveTab}
       activeOrgId={activeOrgId}
       onOrgChange={setActiveOrgId}
     >
-      {activeTab === 'jobs' && <JobsPage organizationId={organizationId} />}
-      {activeTab === 'candidates' && <p className="text-sm text-slate-500">Candidates page coming next.</p>}
-      {activeTab === 'accounts' && <p className="text-sm text-slate-500">Accounts page coming next.</p>}
+      {tab === 'jobs' && <JobsPage organizationId={organizationId} />}
+      {tab === 'candidates' && <CandidatesPage organizationId={organizationId} />}
+      {tab === 'accounts' && profile.role === 'admin' && <AdminAccountsPage />}
     </Layout>
   )
 }

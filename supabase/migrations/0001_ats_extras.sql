@@ -14,7 +14,7 @@ alter table public.candidates
   add column if not exists ai_summary text,
   add column if not exists ai_assessed_at timestamptz;
 
-grant select, insert, update, delete on public.organizations to authenticated;
-grant select, insert, update, delete on public.profiles to authenticated;
-grant select, insert, update, delete on public.jobs to authenticated;
-grant select, insert, update, delete on public.candidates to authenticated;
+grant select, insert, update, delete on public.organizations to authenticated, service_role;
+grant select, insert, update, delete on public.profiles to authenticated, service_role;
+grant select, insert, update, delete on public.jobs to authenticated, service_role;
+grant select, insert, update, delete on public.candidates to authenticated, service_role;
