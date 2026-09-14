@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { Candidate, Stage } from '../types/database'
 import { STAGES } from '../types/database'
 import { supabase } from '../lib/supabase'
+import { isSafeHttpUrl } from '../lib/url'
 
 interface CandidateCardProps {
   candidate: Candidate
@@ -56,7 +57,7 @@ export default function CandidateCard({ candidate, jobTitle, onStageChange, onAs
         {jobTitle}
       </span>
 
-      {candidate.linkedin_url && (
+      {candidate.linkedin_url && isSafeHttpUrl(candidate.linkedin_url) && (
         <a
           href={candidate.linkedin_url}
           target="_blank"

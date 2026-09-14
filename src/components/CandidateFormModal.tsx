@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { supabase } from '../lib/supabase'
+import { isSafeHttpUrl } from '../lib/url'
 import type { Job } from '../types/database'
 
 interface CandidateFormModalProps {
@@ -20,6 +21,11 @@ export default function CandidateFormModal({ organizationId, jobs, onClose, onCr
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+
+    if (linkedinUrl && !isSafeHttpUrl(linkedinUrl)) {
+      setError('LinkedIn URL must be a valid http:// or https:// link.')
+      return
+    }
 
     setSaving(true)
     setError('')

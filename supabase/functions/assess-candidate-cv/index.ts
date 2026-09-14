@@ -47,7 +47,7 @@ Deno.serve(async (req) => {
 
     const { data: candidate, error: candidateError } = await client
       .from('candidates')
-      .select('id, full_name, resume_text, job_id')
+      .select('id, full_name, resume_text, job_id, ai_score')
       .eq('id', candidate_id)
       .single()
 
@@ -57,6 +57,10 @@ Deno.serve(async (req) => {
 
     if (!candidate.resume_text) {
       return json({ error: 'This candidate has no CV text to assess' }, 400)
+    }
+
+    if (candidate.ai_score !== null) {
+      return json({ error: 'This candidate has already been assessed' }, 400)
     }
 
     const { data: job } = await client
