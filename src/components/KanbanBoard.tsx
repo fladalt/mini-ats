@@ -7,9 +7,10 @@ interface KanbanBoardProps {
   jobsById: Map<string, Job>
   onStageChange: (candidateId: string, stage: Stage) => void
   onAssessed: (candidateId: string, score: number, summary: string) => void
+  onDelete: (candidateId: string) => void
 }
 
-export default function KanbanBoard({ candidates, jobsById, onStageChange, onAssessed }: KanbanBoardProps) {
+export default function KanbanBoard({ candidates, jobsById, onStageChange, onAssessed, onDelete }: KanbanBoardProps) {
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
       {STAGES.map((stage) => {
@@ -29,6 +30,7 @@ export default function KanbanBoard({ candidates, jobsById, onStageChange, onAss
                   jobTitle={jobsById.get(candidate.job_id)?.title ?? 'Unknown job'}
                   onStageChange={onStageChange}
                   onAssessed={onAssessed}
+                  onDelete={onDelete}
                 />
               ))}
             </div>

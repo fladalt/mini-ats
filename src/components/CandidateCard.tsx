@@ -8,9 +8,10 @@ interface CandidateCardProps {
   jobTitle: string
   onStageChange: (candidateId: string, stage: Stage) => void
   onAssessed: (candidateId: string, score: number, summary: string) => void
+  onDelete: (candidateId: string) => void
 }
 
-export default function CandidateCard({ candidate, jobTitle, onStageChange, onAssessed }: CandidateCardProps) {
+export default function CandidateCard({ candidate, jobTitle, onStageChange, onAssessed, onDelete }: CandidateCardProps) {
   const [assessing, setAssessing] = useState(false)
   const [assessError, setAssessError] = useState('')
 
@@ -35,11 +36,20 @@ export default function CandidateCard({ candidate, jobTitle, onStageChange, onAs
     <div className="rounded-lg border border-slate-200 bg-white p-3 shadow-sm">
       <div className="flex items-start justify-between gap-2">
         <p className="text-sm font-medium text-slate-900">{candidate.full_name}</p>
-        {candidate.ai_score !== null && (
-          <span className="shrink-0 rounded-full bg-indigo-100 px-2 py-0.5 text-xs font-medium text-indigo-700">
-            {candidate.ai_score}
-          </span>
-        )}
+        <div className="flex shrink-0 items-center gap-1">
+          {candidate.ai_score !== null && (
+            <span className="rounded-full bg-indigo-100 px-2 py-0.5 text-xs font-medium text-indigo-700">
+              {candidate.ai_score}
+            </span>
+          )}
+          <button
+            onClick={() => onDelete(candidate.id)}
+            title="Delete candidate"
+            className="text-xs text-slate-400 hover:text-red-600"
+          >
+            ✕
+          </button>
+        </div>
       </div>
 
       <span className="mt-1 inline-block rounded bg-slate-100 px-1.5 py-0.5 text-xs text-slate-600">

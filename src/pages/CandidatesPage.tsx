@@ -65,6 +65,16 @@ export default function CandidatesPage({ organizationId }: CandidatesPageProps) 
     )
   }
 
+  async function handleDeleteCandidate(candidateId: string) {
+    if (!confirm("Delete this candidate? This can't be undone.")) return
+
+    const { error } = await supabase.from('candidates').delete().eq('id', candidateId)
+
+    if (!error) {
+      setCandidates((prev) => prev.filter((c) => c.id !== candidateId))
+    }
+  }
+
   if (!organizationId) {
     return <p className="text-sm text-slate-500">No organization selected.</p>
   }
@@ -114,6 +124,7 @@ export default function CandidatesPage({ organizationId }: CandidatesPageProps) 
           jobsById={jobsById}
           onStageChange={handleStageChange}
           onAssessed={handleAssessed}
+          onDelete={handleDeleteCandidate}
         />
       )}
 

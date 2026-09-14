@@ -66,6 +66,19 @@ export default function JobsPage({ organizationId }: JobsPageProps) {
     setSaving(false)
   }
 
+  async function handleDelete(job: Job) {
+    if (!organizationId) return
+    if (!confirm(`Delete "${job.title}"? This can't be undone.`)) return
+
+    const { error } = await supabase.from('jobs').delete().eq('id', job.id)
+
+    if (error) {
+      setError(error.message)
+    } else {
+      setJobs((prev) => prev.filter((j) => j.id !== job.id))
+    }
+  }
+
   if (!organizationId) {
     return <p className="text-sm text-slate-500">No organization selected.</p>
   }
@@ -82,11 +95,19 @@ export default function JobsPage({ organizationId }: JobsPageProps) {
         ) : (
           <ul className="space-y-3">
             {jobs.map((job) => (
-              <li key={job.id} className="rounded-lg border border-slate-200 bg-white p-4">
-                <h3 className="font-medium text-slate-900">{job.title}</h3>
-                {job.description && (
-                  <p className="mt-1 text-sm text-slate-600">{job.description}</p>
-                )}
+              <li key={job.id} className="flex items-start justify-between gap-3 rounded-lg border border-slate-200 bg-white p-4">
+                <div>
+                  <h3 className="font-medium text-slate-900">{job.title}</h3>
+                  {job.description && (
+                    <p className="mt-1 text-sm text-slate-600">{job.description}</p>
+                  )}
+                </div>
+                <button
+                  onClick={() => handleDelete(job)}
+                  className="shrink-0 text-xs font-medium text-red-600 hover:underline"
+                >
+                  Delete
+                </button>
               </li>
             ))}
           </ul>
